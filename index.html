@@ -1,0 +1,158 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<!-- <script type="text/javascript" src="functions.js"></script> -->
+	<title>Inventory</title>
+	</head>
+	<body>
+	<div class="container">
+		<div class="col-md-4"></div>
+		<div class="col-md-4">
+			<h2 class="text-center"><u>Inventory</u></h2>
+			<form id="frmAddEdit">
+				<div class="form-group">
+					<input type="text" name="ID" id="txtID" class="form-control" placeholder="Id Barang">
+				</div>
+				<div class="form-group">
+					<input type="text" name="Nama" id="txtName" class="form-control" placeholder="Nama Barang">
+				</div>
+				<div class="form-group">
+					<input type="number" name="Stock" id="txtStock" class="form-control" placeholder="Stock Barang">
+				</div>
+				<div class="form-group">
+					<input type="text" name="Harga" id="txtPrice" class="form-control" placeholder="Harga Barang">
+				</div>
+				<div class="form-group">
+					<input type="submit" value="Save" class="btn btn-primary" id="btnSave"/>
+				</div>
+			</form>
+		</div>
+		<div class="col-md-4"></div>
+		<div class="clearfix"></div>
+		<div class="col-md-3"></div>
+		<div class="col-md-6">
+			<table id="tblList" class="table table-hover table-striped"></table>
+		</div>
+		<div class="col-md-3"></div>
+	</div>
+		<script type="text/javascript">
+
+			$(function(){
+				var user = localStorage.getItem("user");
+				user = JSON.parse(user);
+				if(user.length < 1)
+				{
+					window.location.href = 'login.html';
+				}
+				var operation = "A";
+				var selected_index = -1;
+				var inventory = localStorage.getItem("inventory");
+				inventory = JSON.parse(inventory);
+				if(!inventory){
+					inventory = [];
+				}
+
+				List();
+
+				function Add(){
+					var item = JSON.stringify({
+						'ID'    : $("#txtID").val(),
+						'Name'  : $("#txtName").val(),
+						'Stock' : $("#txtStock").val(),
+						'Price' : $("#txtPrice").val()
+					});
+					inventory.push(item);
+					localStorage.setItem("inventory", JSON.stringify(inventory));
+					alert("The data was saved.");
+					return true;
+				} 
+
+
+				function Edit(){
+					inventory[selected_index] = JSON.stringify({
+							'ID'    : $("#txtID").val(),
+							'Name'  : $("#txtName").val(),
+							'Stock' : $("#txtStock").val(),
+							'Price' : $("#txtPrice").val()
+						});
+					localStorage.setItem("inventory", JSON.stringify(inventory));
+					alert("The data was edited.")
+					operation = "A";
+					return true;
+				} 
+
+				function Delete(){
+					inventory.splice(selected_index, 1);
+					localStorage.setItem("inventory", JSON.stringify(inventory));
+					alert("Item deleted.");
+				}
+
+				function List(){		
+					$("#tblList").html("");
+					$("#tblList").html(
+						"<thead>"+
+						"	<tr>"+
+						"	<th>ID</th>"+
+						"	<th>Name</th>"+
+						"	<th>Stock</th>"+
+						"	<th>Price</th>"+
+						"	<th colspan=2>Action</th>"+
+						"	</tr>"+
+						"</thead>"+
+						"<tbody>"+
+						"</tbody>"
+						);
+					for(var i in inventory){
+						var inv = JSON.parse(inventory[i]);
+					  	$("#tblList tbody").append("<tr>"+
+													 "	<td>"+inv.ID+"</td>" + 
+													 "	<td>"+inv.Name+"</td>" + 
+													 "	<td>"+inv.Stock+"</td>" + 
+													 "	<td>"+inv.Price+"</td>" + 
+													 "	<td><img style='cursor: pointer' src='edit.png' alt='Edit"+i+"' class='btnEdit'/></td><td><img style='cursor: pointer' src='delete.png' alt='Delete"+i+"' class='btnDelete'/></td>" + 
+					  								 "</tr>");
+
+					}
+					console.log($("#tblList tbody"));
+				} 
+
+
+
+				$("#frmAddEdit").bind("submit",function(){
+					if(operation == "A"){
+						return Add();
+					}
+					else
+					{
+						return Edit();		
+					}
+				});
+
+
+				$(".btnEdit").bind("click", function(){
+					operation = "E";
+					selected_index = parseInt($(this).attr("alt").replace("Edit", ""));
+					var inv = JSON.parse(inventory[selected_index]);
+					$("#txtID").val(inv.ID);
+					$("#txtName").val(inv.Name);
+					$("#txtStock").val(inv.Stock);
+					$("#txtPrice").val(inv.Price);
+					$("#txtID").attr("readonly","readonly");
+					$("#txtName").focus();
+				}); 
+
+
+				$(".btnDelete").bind("click", function(){
+					selected_index = parseInt($(this).attr("alt").replace("Delete", ""));
+					Delete();
+					List();
+				}); 
+
+
+			}); 
+
+		</script>
+	</body>
+</html> 
