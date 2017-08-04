@@ -1,161 +1,129 @@
+<!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-	<!-- <script type="text/javascript" src="functions.js"></script> -->
-	<title>Inventory</title>
-	</head>
-	<body>
-	<div class="container">
-		<div class="col-md-4"></div>
-		<div class="col-md-4">
-			<h2 class="text-center"><u>Inventory</u></h2>
-			<form id="frmAddEdit">
-				<div class="form-group">
-					<input type="text" name="ID" id="txtID" class="form-control" placeholder="Id Barang">
-				</div>
-				<div class="form-group">
-					<input type="text" name="Nama" id="txtName" class="form-control" placeholder="Nama Barang">
-				</div>
-				<div class="form-group">
-					<input type="number" name="Stock" id="txtStock" class="form-control" placeholder="Stock Barang">
-				</div>
-				<div class="form-group">
-					<input type="text" name="Harga" id="txtPrice" class="form-control" placeholder="Harga Barang">
-				</div>
-				<div class="form-group">
-					<input type="submit" value="Save" class="btn btn-primary" id="btnSave"/>
-				</div>
-			</form>
-		</div>
-		<div class="col-md-4"></div>
-		<div class="clearfix"></div>
-		<div class="col-md-3"></div>
-		<div class="col-md-6">
-			<table id="tblList" class="table table-hover table-striped"></table>
-		</div>
-		<div class="col-md-3"></div>
+<title>Login Inventory</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false);
+		function hideURLbar(){ window.scrollTo(0,1); } </script>
+<link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+<script src="js/jquery-1.9.1.min.js"></script>
+<link rel="stylesheet" type="text/css" href="css/easy-responsive-tabs.css " />
+ <link href="//fonts.googleapis.com/css?family=Questrial" rel="stylesheet">
+</head>
+<body class="bg agileinfo">
+   <h1 class="agile_head text-center"> Login Inventory </h1>
+   <div class="w3layouts_main wrap">
+        <div id="parentHorizontalTab_agile">
+            <ul class="resp-tabs-list hor_1">
+                <li>Login</li>
+            </ul>
+            <div class="resp-tabs-container hor_1">
+               <div class="w3_agile_login">
+                    <form id="frmLogin">
+					  <p>Email</p>
+					  <input type="email" id="Email" name="username" required="required" />
+					  <p>Password</p>
+					  <input type="password" id="Password" name="username" required="required" class="password" /> 
+					  <input type="submit" value="LogIn" class="agileinfo" />
+					</form>
+                    
+                </div>
+            </div>
+        </div>
+        <br/>
+        <p class="agile_head text-center" style="color: #fff">Hint: email = admin@admin.com, password = admin123</p>
+		 <!-- //Horizontal Tab -->
+    </div>
+	<div class="agileits_w3layouts_copyright text-center">
+			<p>© 2017 Admin Inventory. All rights reserved</p>
 	</div>
-		<script type="text/javascript">
+<!--tabs-->
+<script src="js/easyResponsiveTabs.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+	var user = localStorage.getItem('user');
+	user = JSON.parse(user);
+	if(!user)
+	{
+		user = [];
+	}
 
-			$(function(){
-				var user = localStorage.getItem("user");
-				user = JSON.parse(user);
-				if(!user)
-				{
-					user = [];
-				}
-				if(user.length < 1)
-				{
-					window.location.href = 'login.html';
-				}
-				var operation = "A";
-				var selected_index = -1;
-				var inventory = localStorage.getItem("inventory");
-				inventory = JSON.parse(inventory);
-				if(!inventory){
-					inventory = [];
-				}
+	function Add(){
+		var users = JSON.stringify({
+			'Email'    : $("#Email").val(),
+			'Password'  : $("#Password").val()
+		});
+		user.push(users);
+		localStorage.setItem("user", JSON.stringify(user));
+		alert("Sudah di daftar.");
+		return true;
+	}
 
-				List();
+	// for(var i in user)
+	// {
+	// 	var u = JSON.parse(user[i]);
+	// 	console.log(u.Email+" "+u.Password);
+	// }
+	$("#frmLogin").bind("submit",function(e){
+		for(var i in user)
+		{
+			var u = JSON.parse(user[i]);
+			var counter = 0;
+			if($("#Email").val() == u.Email)
+			{
+				counter++;
+			}
 
-				function Add(){
-					var item = JSON.stringify({
-						'ID'    : $("#txtID").val(),
-						'Name'  : $("#txtName").val(),
-						'Stock' : $("#txtStock").val(),
-						'Price' : $("#txtPrice").val()
-					});
-					inventory.push(item);
-					localStorage.setItem("inventory", JSON.stringify(inventory));
-					alert("Data sudah disimpan");
-					return true;
-				} 
-
-
-				function Edit(){
-					inventory[selected_index] = JSON.stringify({
-							'ID'    : $("#txtID").val(),
-							'Name'  : $("#txtName").val(),
-							'Stock' : $("#txtStock").val(),
-							'Price' : $("#txtPrice").val()
-						});
-					localStorage.setItem("inventory", JSON.stringify(inventory));
-					alert("Data selesai di edit")
-					operation = "A";
-					return true;
-				} 
-
-				function Delete(){
-					inventory.splice(selected_index, 1);
-					localStorage.setItem("inventory", JSON.stringify(inventory));
-					alert("Item telah di hapus");
-				}
-
-				function List(){		
-					$("#tblList").html("");
-					$("#tblList").html(
-						"<thead>"+
-						"	<tr>"+
-						"	<th>ID</th>"+
-						"	<th>Name</th>"+
-						"	<th>Stock</th>"+
-						"	<th>Price</th>"+
-						"	<th colspan=2>Action</th>"+
-						"	</tr>"+
-						"</thead>"+
-						"<tbody>"+
-						"</tbody>"
-						);
-					for(var i in inventory){
-						var inv = JSON.parse(inventory[i]);
-					  	$("#tblList tbody").append("<tr>"+
-													 "	<td>"+inv.ID+"</td>" + 
-													 "	<td>"+inv.Name+"</td>" + 
-													 "	<td>"+inv.Stock+"</td>" + 
-													 "	<td>"+inv.Price+"</td>" + 
-													 "	<td><img style='cursor: pointer' src='edit.png' alt='Edit"+i+"' class='btnEdit'/></td><td><img style='cursor: pointer' src='delete.png' alt='Delete"+i+"' class='btnDelete'/></td>" + 
-					  								 "</tr>");
-
-					}
-				} 
+			if(counter < 1)
+			{
+				alert("User tidak ada");
+			}
+			else
+			{
+				window.location.href = "crud.html";
+			}
+		}
 
 
+		if(Add())
+		{
+			window.location.href = "crud.html";
+		}
+		return false;
+	});
 
-				$("#frmAddEdit").bind("submit",function(){
-					if(operation == "A"){
-						return Add();
-					}
-					else
-					{
-						return Edit();		
-					}
-				});
+	$('#parentHorizontalTab_agile').easyResponsiveTabs({
+		type: 'default',
+		width: 'auto', 
+		fit: true, 
+		tabidentify: 'hor_1', 
+		activate: function(event) { 
+			var $tab = $(this);
+			var $info = $('#nested-tabInfo');
+			var $name = $('span', $info);
+			$name.text($tab.text());
+			$info.show();
+		}
+	});
+});
+</script>
+<script type="text/javascript">
+		// window.onload = function () {
+		// 	document.getElementById("password1").onchange = validatePassword;
+		// 	document.getElementById("password2").onchange = validatePassword;
+		// }
+		function validatePassword(){
+			var pass2=document.getElementById("password2").value;
+			var pass1=document.getElementById("password1").value;
+			if(pass1!=pass2)
+				document.getElementById("password2").setCustomValidity("Passwords Don't Match");
+			else
+				document.getElementById("password2").setCustomValidity('');
+		}
 
+</script>
+<!--//tabs-->
+</body>
+</html>
 
-				$(".btnEdit").bind("click", function(){
-					operation = "E";
-					selected_index = parseInt($(this).attr("alt").replace("Edit", ""));
-					var inv = JSON.parse(inventory[selected_index]);
-					$("#txtID").val(inv.ID);
-					$("#txtName").val(inv.Name);
-					$("#txtStock").val(inv.Stock);
-					$("#txtPrice").val(inv.Price);
-					$("#txtID").attr("readonly","readonly");
-					$("#txtName").focus();
-				}); 
-
-
-				$(".btnDelete").bind("click", function(){
-					selected_index = parseInt($(this).attr("alt").replace("Delete", ""));
-					Delete();
-					List();
-				}); 
-
-
-			}); 
-
-		</script>
-	</body>
-</html> 
