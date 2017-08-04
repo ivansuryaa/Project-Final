@@ -42,6 +42,10 @@
 			$(function(){
 				var user = localStorage.getItem("user");
 				user = JSON.parse(user);
+				if(!user)
+				{
+					user = [];
+				}
 				if(user.length < 1)
 				{
 					window.location.href = 'login.html';
@@ -65,7 +69,7 @@
 					});
 					inventory.push(item);
 					localStorage.setItem("inventory", JSON.stringify(inventory));
-					alert("The data was saved.");
+					alert("Data sudah disimpan");
 					return true;
 				} 
 
@@ -78,7 +82,7 @@
 							'Price' : $("#txtPrice").val()
 						});
 					localStorage.setItem("inventory", JSON.stringify(inventory));
-					alert("The data was edited.")
+					alert("Data selesai di edit")
 					operation = "A";
 					return true;
 				} 
@@ -86,7 +90,7 @@
 				function Delete(){
 					inventory.splice(selected_index, 1);
 					localStorage.setItem("inventory", JSON.stringify(inventory));
-					alert("Item deleted.");
+					alert("Item telah di hapus");
 				}
 
 				function List(){		
@@ -115,7 +119,6 @@
 					  								 "</tr>");
 
 					}
-					console.log($("#tblList tbody"));
 				} 
 
 
